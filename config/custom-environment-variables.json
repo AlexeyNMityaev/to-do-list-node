@@ -1,0 +1,4 @@
+{
+    "jwtPrivateToken": "todolist_jwtPrivateToken",
+    "db": "todolist_db"
+}
