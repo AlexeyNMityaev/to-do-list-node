@@ -8,7 +8,7 @@ startLogging();
 require('./startup/routes')(app);
 require('./startup/db')();
 require('./startup/config')();
-// require('./startup/validation')();
+require('./startup/validation')();
 if(process.env.NODE_ENV === 'production') {
     require('./startup/prod')(app);
 }
