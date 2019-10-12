@@ -38,12 +38,12 @@ router.post('/', validator(validate), async (req, res) => {
 
 router.put('/:id', [auth, validateObjectId, validator(validateUpdate)], async (req, res) => {
     if (req.user._id !== req.params.id) {
-        return res.status(403).res('Not authorized.');
+        return res.status(403).send('Access denied.');
     }
 
     let user = await User.findById(req.params.id);
     if (!user) {
-        return res.status(404).res('User not found.');
+        return res.status(404).send('User not found.');
     }
 
     user.name = req.body.name;
@@ -63,7 +63,7 @@ router.put('/:id', [auth, validateObjectId, validator(validateUpdate)], async (r
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => {
     if (req.user._id !== req.params.id) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Access denied.');
     }
 
     const user = await User.findOneAndDelete({ _id: req.params.id });

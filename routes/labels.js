@@ -25,7 +25,11 @@ router.post('/', [auth, validator(validate)], async (req, res) => {
 router.put('/:id', [auth, validateObjectId, validator(validate)], async (req, res) => {
     let label = await Label.findById(req.params.id);
     if (!label) {
-        return res.status(404).res('Label not found.');
+        return res.status(404).send('Label not found.');
+    }
+
+    if (!label.userId.equals(req.user._id)) {
+        return res.status(403).send('Access denied.');
     }
 
     label.name = req.body.name;
@@ -35,10 +39,16 @@ router.put('/:id', [auth, validateObjectId, validator(validate)], async (req, re
 });
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => {
-    const label = await Label.findOneAndDelete({ _id: req.params.id });
+    let label = await Label.findById(req.params.id);
     if (!label) {
-        return res.status(404).res('Label not found.');
+        return res.status(404).send('Label not found.');
     }
+
+    if (!label.userId.equals(req.user._id)) {
+        return res.status(403).send('Access denied.');
+    }
+
+    label = await label.delete();
 
     res.send(label);
 });

@@ -6,6 +6,7 @@ const pages = require('../routes/pages');
 const users = require('../routes/users');
 const login = require('../routes/login');
 const labels = require('../routes/labels');
+const notes = require('../routes/notes');
 
 module.exports = function(app) {
     app.use(express.json());
@@ -15,5 +16,6 @@ module.exports = function(app) {
     app.use('/api/users', users);
     app.use('/api/login', login);
     app.use('/api/labels', labels);
+    app.use('/api/notes', notes);
     app.use(error);
 }
