@@ -23,7 +23,7 @@ describe('auth middleware', () => {
         token = new User().getAuthToken();
     });
 
-    it('should return 401 if user is not authorized', async () => {
+    it('should return 401 if user is not authenticated', async () => {
         token = '';
         const res = await exec();
 

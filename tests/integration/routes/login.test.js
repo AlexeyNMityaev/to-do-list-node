@@ -3,7 +3,7 @@ const request = require('supertest');
 const bcrypt = require('bcrypt');
 const { User } = require('../../../models/user');
 
-describe('login route', () => {
+describe('/api/login', () => {
     beforeEach(() => { server = require('../../../index'); });
     afterEach(async () => { 
         await User.deleteMany({});

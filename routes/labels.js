@@ -12,6 +12,19 @@ router.get('/', auth, async (req, res) => {
     res.send(labels);
 });
 
+router.get('/:id', [auth, validateObjectId], async (req, res) => {
+    const label = await Label.findById(req.params.id);
+    if (!label) {
+        return res.status(404).send('Label not found.');
+    }
+
+    if (!label.userId.equals(req.user._id)) {
+        return res.status(403).send('Access denied.');
+    }
+
+    res.send(label);
+});
+
 router.post('/', [auth, validator(validate)], async (req, res) => {
     let label = new Label({
         name: req.body.name,

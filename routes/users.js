@@ -18,7 +18,17 @@ router.post('/me', auth, async (req, res) => {
 
 router.get('/', [auth, admin], async (req, res) => {
     const users = await User.find().select('-password');
+
     res.send(users);
+});
+
+router.get('/:id', [auth, admin, validateObjectId], async (req, res) => {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+        return res.status(404).send('User not found.');
+    }
+
+    res.send(user);
 });
 
 router.post('/', validator(validate), async (req, res) => {
@@ -33,7 +43,7 @@ router.post('/', validator(validate), async (req, res) => {
 
     await user.save();
     let token = user.getAuthToken();
-    res.header('x-auth-header', token).send(_.pick(user, ['_id', 'name', 'email']));
+    res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
 });
 
 router.put('/:id', [auth, validateObjectId, validator(validateUpdate)], async (req, res) => {
@@ -47,7 +57,18 @@ router.put('/:id', [auth, validateObjectId, validator(validateUpdate)], async (r
     }
 
     user.name = req.body.name;
-    user.email = req.body.email;
+    if (req.body.email) {
+        let existingUser = await User.findOne({ 
+            $and: [
+                { email: req.body.email },
+                { _id: { $ne: user._id } }
+            ] 
+        });
+        if (existingUser) {
+            return res.status(400).send('Email alrady taken.');
+        }
+        user.email = req.body.email;
+    }
     if (req.body.newPassword && req.body.password) {
         let validPassword = await bcrypt.compare(req.body.password, user.password);
         if (!validPassword) {
