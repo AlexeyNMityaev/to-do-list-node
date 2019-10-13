@@ -13,13 +13,9 @@ router.get('/', auth, async (req, res) => {
 });
 
 router.get('/:id', [auth, validateObjectId], async (req, res) => {
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findOne({ _id: req.params.id, userId: req.user._id });
     if (!note) {
         return res.status(404).send('Note not found.');
-    }
-
-    if (!note.userId.equals(req.user._id)) {
-        return res.status(403).send('Access denied.');
     }
     
     res.send(note);
@@ -40,38 +36,31 @@ router.post('/', [auth, validator(validate)], async (req, res) => {
 });
 
 router.put('/:id', [auth, validateObjectId, validator(validate)], async (req, res) => {
-    let note = await Note.findById(req.params.id);
+    const note = await Note.findOneAndUpdate(
+        { _id: req.params.id, userId: req.user._id },
+        { $set: {
+            title: req.body.title,
+            archived: req.body.archived,
+            color: req.body.color,
+            labelIds: req.body.labelIds,
+            text: req.body.text,
+            ticks: req.body.ticks,
+            updatedAt: new Date()
+        } },
+        { new: true }
+    );
     if (!note) {
         return res.status(404).send('Note not found.');
     }
 
-    if (!note.userId.equals(req.user._id)) {
-        return res.status(403).send('Access denied.');
-    }
-
-    note.title = req.body.title;
-    note.archived = req.body.archived;
-    note.color = req.body.color;
-    note.labelIds = req.body.labelIds;
-    note.text = req.body.text;
-    note.ticks = req.body.ticks;
-    note.updatedAt = new Date();
-
-    note = await note.save();
     res.send(note);
 });
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => {
-    let note = await Note.findById(req.params.id);
+    let note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!note) {
         return res.status(404).send('Note not found.');
     }
-
-    if (!note.userId.equals(req.user._id)) {
-        return res.status(403).send('Access denied.');
-    }
-
-    note = await note.delete();
 
     res.send(note);
 });

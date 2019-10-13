@@ -91,11 +91,11 @@ describe('/api/labels', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 403 if user is not authorized', async () => {
+        it('should return 404 if userId is wrong', async () => {
             token = new User().getAuthToken();
             const res = await exec();
 
-            expect(res.status).toBe(403);
+            expect(res.status).toBe(404);
         });
 
         it('should return 404 if label is not found', async () => {
@@ -209,11 +209,11 @@ describe('/api/labels', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 403 if user is not authorized', async () => {
+        it('should return 404 if userId is wrong', async () => {
             token = new User().getAuthToken();
             const res = await exec();
 
-            expect(res.status).toBe(403);
+            expect(res.status).toBe(404);
         });
 
         it('should return 404 if label is not found', async () => {
@@ -279,11 +279,11 @@ describe('/api/labels', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 403 if user is not authorized', async () => {
+        it('should return 404 is userId is wrong', async () => {
             token = new User().getAuthToken();
             const res = await exec();
 
-            expect(res.status).toBe(403);
+            expect(res.status).toBe(404);
         });
 
         it('should return 404 if note is not found', async () => {

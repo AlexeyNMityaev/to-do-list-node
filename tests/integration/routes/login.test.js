@@ -44,8 +44,22 @@ describe('/api/login', () => {
         expect(res.status).toBe(400);
     });
 
+    it('should return 400 if user email is wrong', async () => {
+        userMock.email = 'test2@test.com';
+        const res = await exec();
+
+        expect(res.status).toBe(400);
+    });
+
     it('should return 400 if user password is not provided or invalid', async () => {
         userMock.password = '';
+        const res = await exec();
+
+        expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if user password is wrong', async () => {
+        userMock.password = '54321';
         const res = await exec();
 
         expect(res.status).toBe(400);

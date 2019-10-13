@@ -1,14 +1,25 @@
-const winston = require('winston');
+const { createLogger, transports, format } = require('winston');
+const { combine, colorize } = format;
 require('express-async-errors');
 
-const logger = winston.createLogger({
+const logger = createLogger({
     transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'logger.log' })
+        new transports.Console({
+            format: combine(
+                colorize(),
+                format.simple()
+            )
+        }),
+        new transports.File({ filename: 'logger.log' })
     ],
     exceptionHandlers: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'uncaughtException.log' })
+        new transports.Console({
+            format: combine(
+                colorize(),
+                format.simple()
+            )
+        }),
+        new transports.File({ filename: 'uncaughtException.log' })
     ]
 });
 
