@@ -53,6 +53,49 @@ describe('/api/notes', () => {
         });
     });
 
+    describe('GET /archive', () => {
+
+        let token;
+        let note;
+        let noteMock;
+
+        const exec = async () => {
+            return await request(server)
+                            .get('/api/notes/archive')
+                            .set('x-auth-token', token);
+        };
+        
+        beforeEach(async () => {
+            let user = new User();
+            token = user.getAuthToken();
+
+            noteMock = {
+                title: '12345',
+                userId: user._id,
+                archived: true
+            };
+            name = '12345';
+            note = new Note(noteMock);
+            await note.save();
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+            token = '';
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return all archived notes', async () => {
+            const res = await exec();
+            
+            expect(res.status).toBe(200);
+            expect(res.body.length).toBe(1);
+            expect(res.body.some(g => g.title === noteMock.title)).toBeTruthy();
+            expect(res.body.some(g => g.archived === noteMock.archived)).toBeTruthy();
+        });
+    });
+
     describe('GET /:id', () => {
 
         let token;

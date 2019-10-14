@@ -7,7 +7,13 @@ const validateObjectId = require('../middleware/validateObjectId');
 const { Note, validate } = require('../models/note');
 
 router.get('/', auth, async (req, res) => {
-    const notes = await Note.find({ userId: req.user._id }).select('-userId');
+    const notes = await Note.find({ userId: req.user._id, archived: false }).select('-userId').sort('updatedAt pinned');
+
+    res.send(notes);
+});
+
+router.get('/archive', auth, async (req, res) => {
+    const notes = await Note.find({ userId: req.user._id, archived: true }).select('-userId').sort('updatedAt');
 
     res.send(notes);
 });
@@ -41,6 +47,7 @@ router.put('/:id', [auth, validateObjectId, validator(validate)], async (req, re
         { $set: {
             title: req.body.title,
             archived: req.body.archived,
+            pinned: req.body.pinned,
             color: req.body.color,
             labelIds: req.body.labelIds,
             text: req.body.text,

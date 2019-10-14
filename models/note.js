@@ -18,6 +18,10 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    pinned: {
+        type: Boolean,
+        default: false
+    },
     color: {
         type: String,
         maxlength: 24,
@@ -64,6 +68,7 @@ function validate(obj) {
     const model = Joi.object({
         title: Joi.string().min(1).max(255).required(),
         archived: Joi.boolean(),
+        pinned: Joi.boolean(),
         color: Joi.string().max(24),
         labelIds: Joi.array().items(Joi.object({
             id: Joi.objectId().required()
