@@ -63,6 +63,15 @@ router.put('/:id', [auth, validateObjectId, validator(validate)], async (req, re
     res.send(note);
 });
 
+router.delete('/', auth, async (req, res) => {
+    let notes = await Note.deleteMany({ userId: req.user._id });
+    if (!notes.deletedCount) {
+        return res.status(404).send('Notes not found.');
+    }
+
+    res.send(notes);
+});
+
 router.delete('/:id', [auth, validateObjectId], async (req, res) => {
     let note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!note) {

@@ -7,7 +7,8 @@ const labelSchema = new mongoose.Schema({
         type: String,
         min: 1,
         max: 255,
-        required: true
+        required: true,
+        trim: true
     },
     userId: {
         type: ObjectId,

@@ -287,6 +287,54 @@ describe('/api/notes', () => {
         });
     });
 
+    describe('DELETE /', () => {
+
+        let token;
+        let note;
+        let noteMock;
+
+        const exec = async () => {
+            return await request(server)
+                            .delete('/api/notes/')
+                            .set('x-auth-token', token);
+        };
+        
+        beforeEach(async () => {
+            let user = new User();
+            token = user.getAuthToken();
+
+            noteMock = {
+                title: '12345',
+                userId: user._id
+            };
+            note = new Note(noteMock);
+            await note.save();
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+            token = '';
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 404 if notes are not found', async () => {
+            await Note.deleteMany({});
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should delete notes and return the number of documents deleted', async () => {
+            const res = await exec();
+            const allNotes = await Note.find();
+
+            expect(allNotes.length).toBe(0);
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('deletedCount', 1);
+        });
+    });
+
     describe('DELETE /:id', () => {
 
         let token;
@@ -334,7 +382,7 @@ describe('/api/notes', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 404 if user is not found', async () => {
+        it('should return 404 if note is not found', async () => {
             await note.delete();
             const res = await exec();
 
